@@ -1,11 +1,13 @@
 Package: shinetwork
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Network creation, visualisation and analysis
+Version: 0.1
+Author: Wesley Brants
+Depends: softui, shiny,visNetwork, dplyr
+Maintainer: Wesley Brants <wesley@shintolabs.nl>
+Description: Builds a network from a structure config and datasets, as well as providing the user with several means for visualisation and analysis
+License: CC0
 Encoding: UTF-8
+RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
 LazyData: true

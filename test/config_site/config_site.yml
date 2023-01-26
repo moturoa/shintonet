@@ -1,0 +1,71 @@
+# ------------- Test -------------
+
+network:
+  nodeSettings:
+    mass: 5
+  nodes:
+    address:
+      dataset: "address_data"
+      id: "address_id"
+      label: "address_id"
+      group: "address"
+      title: "address_id"
+      level: 1
+      shape: "circularImage"
+      image: "home_icon2.png"
+      borderWidth: 1
+      colorBackground: "#507777"
+      colorBorder: "#F7F5F3"
+      highlightBackground: "#507777"
+      highlightBorder: "#507777"
+      fontColor: "#507777"
+    resident:
+      dataset: "resident_data"
+      id: "person_id"
+      label: "person_id"
+      group: "resident"
+      title: "person_id"
+      level: 0
+      shape: "circularImage"
+      image: "user_icon.png"
+      borderWidth: 1
+      colorBackground: "#B0D5D5"
+      colorBorder: "#F7F5F3"
+      highlightBackground: "#B0D5D5"
+      highlightBorder: "#507777"
+      fontColor: "#507777"
+    person:
+      dataset: "person_data"
+      id: "person_id"
+      label: "person_id"
+      group: "person"
+      title: "person_id"
+      level: 0
+      shape: "circularImage"
+      image: "user_icon.png"
+      borderWidth: 1
+      colorBackground: "#E54125"
+      colorBorder: "#F7F5F3"
+      highlightBackground: "#E54125"
+      highlightBorder: "#507777"
+      fontColor: "#507777"
+  edgeSettings:
+    arrowTo: TRUE
+    edgeColor:  "#B0D5D5"
+    edgeHighlight: "#507777"
+    smooth: TRUE
+  edges:
+    residency:
+      dataset: "resident_data"
+      fromCol: "person_id"
+      toCol: "address_id"
+      label: "Woont op"
+      title: "Woont op"
+    person_lives:
+      dataset: "person_data"
+      fromCol: "person_id"
+      toCol: "address_id"
+      label: "Woont op"
+      title: "Woont op"
+
+
