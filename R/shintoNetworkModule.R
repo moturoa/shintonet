@@ -22,14 +22,35 @@ shintoNetworkUI <- function(id){
 #' @param hierarchical A boolean specifying 'visHierarchicalLayout'
 #' @rdname shintoNetworkModule
 
-shintoNetworkModule <- function(input, output, session, config, datasets, hierarchical = reactive(NULL), show_labels = reactive(NULL)){
+shintoNetworkModule <- function(input, output, session, config, nodes_data = NULL, edges_data = NULL,
+                                datasets = NULL, hierarchical = reactive(NULL), show_labels = reactive(NULL)){
 
   ns <- session$ns
 
 
   output$shinto_network <- visNetwork::renderVisNetwork({
-    nodes <- shinetwork::create_network_nodes(config, datasets)
-    edges <- shinetwork::create_network_edges(config, datasets)
+
+    if(is.null(nodes_data)){
+      if(is.null(datasets)){
+        shinytoastr::toastr_error("No nodes have been supplied, but also no datasets have been supplied.
+                                  Either nodes or a list of datasets must be supplied")
+      } else {
+        nodes <- shinetwork::create_network_nodes(config, datasets)
+      }
+    } else {
+      nodes <- nodes_data
+    }
+
+    if(is.null(edges_data)){
+      if(is.null(datasets)){
+        shinytoastr::toastr_error("No edges have been supplied, but also no datasets have been supplied.
+                                  Either edges or a list of datasets must be supplied")
+      } else {
+        edges <- shinetwork::create_network_edges(config, datasets)
+      }
+    } else {
+      edges <- edges_data
+    }
 
     if(is.null(show_labels())){
       show_labels <- TRUE
