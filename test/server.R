@@ -2,10 +2,12 @@ server <- function(input, output, session) {
 
   ordered <- reactive({
     input$switch_order
+    #NULL
   })
 
   labels <- reactive({
     input$switch_labels
+    #NULL
   })
 
   callModule(shinetwork::shintoNetworkModule, "shintoNetwork", .cc$get("network"), list("address_data" = adressen,

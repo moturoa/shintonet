@@ -31,9 +31,21 @@ shintoNetworkModule <- function(input, output, session, config, datasets, hierar
     nodes <- shinetwork::create_network_nodes(config, datasets)
     edges <- shinetwork::create_network_edges(config, datasets)
 
+    if(is.null(show_labels())){
+      show_labels <- TRUE
+    } else {
+      show_labels <- show_labels()
+    }
 
-    if(!show_labels()){
-      edges <- edges %>% select(!label)
+    if(is.null(hierarchical())){
+      hierarchical <- FALSE
+    } else {
+      hierarchical <- hierarchical()
+    }
+
+
+    if(!show_labels){
+      edges <- edges %>% dplyr::select(!label)
     }
 
     res_network <- visNetwork::visNetwork(nodes, edges, width = "100%")  %>%
@@ -43,7 +55,7 @@ shintoNetworkModule <- function(input, output, session, config, datasets, hierar
                                         highlight = config$edgeSettings$edgeHighlight),
                            smooth = config$edgeSettings$smooth) %>%
       visNetwork::visInteraction(tooltipStyle = 'position: fixed;visibility:hidden; background-color: #efefef;  font-size: 14px; text-align: center; border-radius: 6px; padding: 8px; margin: 3px;') %>%
-      visNetwork::visHierarchicalLayout(enabled=hierarchical())
+      visNetwork::visHierarchicalLayout(enabled=hierarchical)
 
     node_kinds <- names(config$nodes)
 
