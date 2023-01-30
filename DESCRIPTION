@@ -3,7 +3,7 @@ Type: Package
 Title: Network creation, visualisation and analysis
 Version: 0.1
 Author: Wesley Brants
-Depends: softui, shiny,visNetwork, dplyr, shinytoastr
+Depends: softui, shiny,visNetwork, dplyr, shinytoastr, reactable, stringr, glue
 Maintainer: Wesley Brants <wesley@shintolabs.nl>
 Description: Builds a network from a structure config and datasets, as well as providing the user with several means for visualisation and analysis
 License: CC0

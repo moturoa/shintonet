@@ -19,6 +19,7 @@ network:
       highlightBackground: "#507777"
       highlightBorder: "#507777"
       fontColor: "#507777"
+      table_icon: "house"
     resident:
       dataset: "resident_data"
       id: "person_id"
@@ -34,6 +35,7 @@ network:
       highlightBackground: "#B0D5D5"
       highlightBorder: "#507777"
       fontColor: "#507777"
+      table_icon: "person-circle"
     person:
       dataset: "person_data"
       id: "person_id"
@@ -49,6 +51,7 @@ network:
       highlightBackground: "#E54125"
       highlightBorder: "#507777"
       fontColor: "#507777"
+      table_icon: "person-bounding-box"
   edgeSettings:
     arrowTo: TRUE
     edgeColor:  "#B0D5D5"

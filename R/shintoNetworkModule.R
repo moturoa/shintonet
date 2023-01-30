@@ -18,12 +18,17 @@ shintoNetworkUI <- function(id){
 
 #' @export
 #' @param config A structured list form a config file which specifies the script/layout of how the network must be built
-#' @param datasets A list of datasets which contain the data for the network
+#' @param nodes_data Optional dataset of precalculated nodes. Must be in the same format as if they would be created by shinetwork::create_network_nodes
+#' @param edges_data Optional dataset of precalculated edges. Must be in the same format as if they would be created by shinetwork::create_network_edges
+#' @param datasets A list of datasets which contain the data for the network, and can be submitted if nodes and edges have not been calculated yet.
 #' @param hierarchical A boolean specifying 'visHierarchicalLayout'
+#' @param show_labels A boolean specifying whether labels on the edges must be shown
+#' @param hover_function A function specifying how the title of the nodes must be altered so it is shown in the in the hoover
 #' @rdname shintoNetworkModule
 
 shintoNetworkModule <- function(input, output, session, config, nodes_data = NULL, edges_data = NULL,
-                                datasets = NULL, hierarchical = reactive(NULL), show_labels = reactive(NULL)){
+                                datasets = NULL, hierarchical = reactive(NULL), show_labels = reactive(NULL),
+                                hover_function = NULL){
 
   ns <- session$ns
 
@@ -62,6 +67,12 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = NUL
       hierarchical <- FALSE
     } else {
       hierarchical <- hierarchical()
+    }
+
+    if(!is.null(hover_function)){
+      nodes <- nodes %>%
+        dplyr::rowwise() %>%
+        dplyr::mutate(title = do.call(hover_function, list(title)))
     }
 
 
