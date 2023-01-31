@@ -3,8 +3,7 @@ source("R/configurationR6.R")
 
 personen <- shinetwork::person
 adressen <- shinetwork::address
-bewoners <- shinetwork::resident
-
+businesses <- shinetwork::business
 
 .cc <- configurationObject$new(filename = "config_site/config_site.yml")
 

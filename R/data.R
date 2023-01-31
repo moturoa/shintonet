@@ -1,7 +1,7 @@
 #' Adresses
 #'
 #'
-#' @format A data frame with 1 rows and 2 variables:
+#' @format A data frame with 2 rows and 2 variables:
 #' \describe{
 #'   \item{address_id}{}
 #'   \item{address_name}{}
@@ -10,10 +10,10 @@
 "address"
 
 
-#' Persons of interest
+#' People
 #'
 #'
-#' @format A data frame with 1 rows and 4 variables:
+#' @format A data frame with 3 rows and 4 variables:
 #' \describe{
 #'   \item{person_id}{}
 #'   \item{address_id}{}
@@ -22,14 +22,15 @@
 #' }
 "person"
 
-#' Residents of the address
+#' Businesses
 #'
 #'
-#' @format A data frame with 2 rows and 4 variables:
+#' @format A data frame with 4 rows and 5 variables:
 #' \describe{
-#'   \item{person_id}{}
+#'   \item{business_id}{}
+#'   \item{branche}{}
 #'   \item{address_id}{}
-#'   \item{birth_data}{}
-#'   \item{sex}{}
+#'   \item{owner_id}{}
+#'   \item{business_registration}{}
 #' }
-"resident"
+"business"

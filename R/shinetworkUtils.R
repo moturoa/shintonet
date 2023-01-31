@@ -4,6 +4,7 @@
 #' @param datasets A list of datasets which contain the data for the network
 #' @rdname shinetworkUtils
 create_network_nodes <- function(config, datasets){
+
   network_nodes <-  data.frame(
     id = c(),
     label = c(),

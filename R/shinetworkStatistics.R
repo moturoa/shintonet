@@ -10,12 +10,16 @@ count_nodes <- function(nodes, groupname = NULL){
 
   } else {
 
-    filtered_nodes <- nodes %>%
-      dplyr::select(id, group) %>%
-      dplyr::filter(group == !!groupname) %>%
-      unique()
+    if(nrow(nodes) == 0){
+      return(0)
+    } else {
+      filtered_nodes <- nodes %>%
+        dplyr::select(id, group) %>%
+        dplyr::filter(group == !!groupname) %>%
+        unique()
 
-    return (nrow(filtered_nodes))
+      return (nrow(filtered_nodes))
+    }
   }
 
 }
@@ -31,12 +35,16 @@ count_edges <- function(edges, labelname = NULL){
     return(nrow(edges))
 
   } else {
-    filtered_edges <- edges %>%
-      dplyr::select(from, to, label) %>%
-      dplyr::filter(label == !!labelname) %>%
-      unique()
+    if(nrow(edges) == 0){
+      return(0)
+    } else {
+      filtered_edges <- edges %>%
+        dplyr::select(from, to, label) %>%
+        dplyr::filter(label == !!labelname) %>%
+        unique()
 
-    return (nrow(filtered_edges))
+      return (nrow(filtered_edges))
+    }
   }
 
 }

@@ -24,37 +24,39 @@ shintoNetworkUI <- function(id){
 #' @param hierarchical A boolean specifying 'visHierarchicalLayout'
 #' @param show_labels A boolean specifying whether labels on the edges must be shown
 #' @param hover_function A function specifying how the title of the nodes must be altered so it is shown in the in the hoover
+#' @param hover_groups Vector specifying which groups to apply the hover upon. If the hover_function is set and hover_groups is NULL, the function is applied on all nodes.
+#' @param expandable Boolean specifying whether the user can expand the network by showing other connections of a node
 #' @rdname shintoNetworkModule
 
-shintoNetworkModule <- function(input, output, session, config, nodes_data = NULL, edges_data = NULL,
-                                datasets = NULL, hierarchical = reactive(NULL), show_labels = reactive(NULL),
-                                hover_function = NULL){
+shintoNetworkModule <- function(input, output, session, config, nodes_data = reactive(NULL), edges_data = reactive(NULL),
+                                datasets = reactive(NULL), hierarchical = reactive(NULL), show_labels = reactive(NULL),
+                                hover_function = NULL, hover_groups = NULL, expandable = FALSE){
 
   ns <- session$ns
 
 
   output$shinto_network <- visNetwork::renderVisNetwork({
 
-    if(is.null(nodes_data)){
-      if(is.null(datasets)){
+    if(is.null(nodes_data())){
+      if(is.null(datasets())){
         shinytoastr::toastr_error("No nodes have been supplied, but also no datasets have been supplied.
                                   Either nodes or a list of datasets must be supplied")
       } else {
-        nodes <- shinetwork::create_network_nodes(config, datasets)
+        nodes <- shinetwork::create_network_nodes(config, datasets())
       }
     } else {
-      nodes <- nodes_data
+      nodes <- nodes_data()
     }
 
-    if(is.null(edges_data)){
-      if(is.null(datasets)){
+    if(is.null(edges_data())){
+      if(is.null(datasets())){
         shinytoastr::toastr_error("No edges have been supplied, but also no datasets have been supplied.
                                   Either edges or a list of datasets must be supplied")
       } else {
-        edges <- shinetwork::create_network_edges(config, datasets)
+        edges <- shinetwork::create_network_edges(config, datasets())
       }
     } else {
-      edges <- edges_data
+      edges <- edges_data()
     }
 
     if(is.null(show_labels())){
@@ -70,9 +72,23 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = NUL
     }
 
     if(!is.null(hover_function)){
-      nodes <- nodes %>%
-        dplyr::rowwise() %>%
-        dplyr::mutate(title = do.call(hover_function, list(title)))
+      if(is.null(hover_groups)){
+        nodes <- nodes %>%
+          dplyr::rowwise() %>%
+          dplyr::mutate(title = do.call(hover_function, list(title)))
+      } else {
+        nodes_altered <- nodes %>%
+          dplyr::filter(group %in% hover_groups) %>%
+          dplyr::rowwise() %>%
+          dplyr::mutate(title = do.call(hover_function, list(title)))
+
+        nodes_not_altered <- nodes %>%
+          dplyr::filter(!(id %in% nodes_altered$id))
+
+        nodes <- rbind(nodes_not_altered, nodes_altered)
+      }
+
+
     }
 
 
@@ -104,8 +120,21 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = NUL
                               font = list(color = config$nodes[[nk]]$fontColor))
     })
 
+    if(expandable){
+
+      clickid <- ns("current_node_id")
+      res_network <- res_network %>%
+        visNetwork::visEvents(select = glue("function(nodes) {
+            Shiny.onInputChange('{clickid}', nodes.nodes[0]);}")) #Error?
+
+    }
+
     res_network
 
+  })
+
+  observeEvent(input$current_node_id, {
+    browser()
   })
 
 

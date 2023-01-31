@@ -10,30 +10,56 @@ server <- function(input, output, session) {
     #NULL
   })
 
+  chosen_address <- reactive({
+    chosen_address <- input$sel_address
+    adressen %>%
+      dplyr::filter(address_name == chosen_address)
+  })
 
-  # OPTION 1
+  residents <- reactive({
+    req(chosen_address())
+    personen %>%
+      dplyr::filter(address_id == chosen_address()$address_id)
+  })
+
+  business_at_address <- reactive({
+    req(chosen_address())
+    businesses %>%
+      dplyr::filter(address_id == chosen_address()$address_id) %>%
+      dplyr::select(business_id, address_id) %>%
+      unique()
+  })
+
+  ownership_at_address <- reactive({
+    req(chosen_address())
+    businesses %>%
+      dplyr::filter(address_id == chosen_address()$address_id)
+  })
 
   nodes <- reactive({
-    shinetwork::create_network_nodes(.cc$get("network"), list("address_data" = adressen,
-                                                              "resident_data" = bewoners,
-                                                              "person_data" = personen))
+    shinetwork::create_network_nodes(.cc$get("network"), list("address_data" = chosen_address(),
+                                                              "person_data" = residents(),
+                                                              "business_data" = business_at_address()))
   })
   edges <- reactive({
-    shinetwork::create_network_edges(.cc$get("network"), list("address_data" = adressen,
-                                                              "resident_data" = bewoners,
-                                                              "person_data" = personen))
+    shinetwork::create_network_edges(.cc$get("network"), list("address_data" = chosen_address(),
+                                                              "person_data" = residents(),
+                                                              "business_data" = business_at_address(),
+                                                              "ownership" = ownership_at_address()))
   })
 
+  # OPTION 1
   callModule(shinetwork::shintoNetworkModule, "shintoNetwork",
-             config = .cc$get("network"), nodes_data = nodes(), edges_data = edges(),
-             hierarchical = ordered, show_labels = labels, hover_function = "make_link_from_text")
+             config = .cc$get("network"), nodes_data = nodes, edges_data = edges,
+             hierarchical = ordered, show_labels = labels, hover_function = "make_link_from_text",
+             hover_groups = c("address", "person"), expandable = TRUE)
 
   # OPTION 2
   # callModule(shinetwork::shintoNetworkModule, "shintoNetwork", config = .cc$get("network"),
-  #            datasets = list("address_data" = adressen,
-  #                            "resident_data" = bewoners,
-  #                            "person_data" = personen),
-  #            hierarchical = ordered, show_labels = labels)
+  #            datasets = reactive({list("address_data" = chosen_address(),
+  #                                      "person_data" = residents())}),
+  #            hierarchical = ordered, show_labels = labels, hover_function = "make_link_from_text",
+  #            hover_groups = c("address", "person"))
 
   output$amount_of_nodes_ui <- renderUI({
     n_nodes <- shinetwork::count_nodes(nodes())
