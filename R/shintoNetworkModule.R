@@ -10,7 +10,8 @@ shintoNetworkUI <- function(id){
   softui::fluid_page(
     softui::fluid_row(
       shiny::column(12,
-                    visNetwork::visNetworkOutput(ns("shinto_network"))
+                    visNetwork::visNetworkOutput(ns("shinto_network")),
+                    uiOutput(ns("expand_button_ui"))
       )
     )
   )
@@ -30,13 +31,12 @@ shintoNetworkUI <- function(id){
 
 shintoNetworkModule <- function(input, output, session, config, nodes_data = reactive(NULL), edges_data = reactive(NULL),
                                 datasets = reactive(NULL), hierarchical = reactive(NULL), show_labels = reactive(NULL),
-                                hover_function = NULL, hover_groups = NULL, expandable = FALSE){
+                                hover_function = NULL, hover_groups = NULL, expandable = FALSE,
+                                expanded_data = reactive(NULL)){
 
   ns <- session$ns
 
-
-  output$shinto_network <- visNetwork::renderVisNetwork({
-
+  nodes <- reactive({
     if(is.null(nodes_data())){
       if(is.null(datasets())){
         shinytoastr::toastr_error("No nodes have been supplied, but also no datasets have been supplied.
@@ -48,6 +48,15 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
       nodes <- nodes_data()
     }
 
+    if(nrow(expanded_data()$expanded_nodes) > 0){
+      nodes <- rbind(nodes, expanded_data()$expanded_nodes) %>%
+        unique()
+    }
+
+    nodes
+  })
+
+  edges <- reactive({
     if(is.null(edges_data())){
       if(is.null(datasets())){
         shinytoastr::toastr_error("No edges have been supplied, but also no datasets have been supplied.
@@ -58,6 +67,20 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
     } else {
       edges <- edges_data()
     }
+
+    if(nrow(expanded_data()$expanded_edges) > 0){
+      edges <- rbind(edges, expanded_data()$expanded_edges) %>%
+        unique()
+    }
+
+    edges
+  })
+
+
+  output$shinto_network <- visNetwork::renderVisNetwork({
+
+    nodes <- nodes()
+    edges <- edges()
 
     if(is.null(show_labels())){
       show_labels <- TRUE
@@ -124,8 +147,8 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
 
       clickid <- ns("current_node_id")
       res_network <- res_network %>%
-        visNetwork::visEvents(select = glue("function(nodes) {
-            Shiny.onInputChange('{clickid}', nodes.nodes[0]);}")) #Error?
+        visNetwork::visEvents(click = paste0("function(nodes){Shiny.onInputChange('", clickid, "', nodes.nodes[0]);;}")
+        )
 
     }
 
@@ -133,9 +156,31 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
 
   })
 
-  observeEvent(input$current_node_id, {
-    browser()
+  clicked_node <- reactiveVal(NULL)
+
+  output$expand_button_ui <- shiny::renderUI({
+    req(input$current_node_id)
+    softui::fluid_row(
+      shiny::column(12,
+                    softui::action_button(ns("btn_expand_node"), "Expand",
+                                          icon = softui::bsicon("arrows-angle-expand"), status = "success")
+      )
+    )
   })
+
+  observeEvent(input$btn_expand_node, {
+    req(input$current_node_id)
+    group <- nodes() %>%
+      dplyr::filter(id == !!input$current_node_id) %>%
+      dplyr::select(group) %>%
+      unique() %>%
+      dplyr::pull(group)
+    clicked_node(list("node_id" = input$current_node_id, "group" = group))
+  })
+
+
+  return(reactive(clicked_node()))
+
 
 
 }

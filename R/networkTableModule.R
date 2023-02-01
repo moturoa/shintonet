@@ -18,18 +18,18 @@ networkTableUI <- function(id){
 
 #' @export
 #' @param config A structured list form a config file which specifies the script/layout of how the network must be built
-#' @param nodes_data Optional dataset of precalculated nodes. Must be in the same format as if they would be created by shinetwork::create_network_nodes
+#' @param nodes_data Dataset of precalculated nodes. Must be in the same format as if they would be created by shinetwork::create_network_nodes
 #' @param make_link Boolean specifying if the label in the table is a link
 #' @param show_icons Boolean specifying if the group must be shown as an icon (specified in the config file (table_icon))
 #' @rdname networkTableModule
 
-networkTableModule <- function(input, output, session, config, nodes_data = NULL, make_link = FALSE, show_icons = FALSE){
+networkTableModule <- function(input, output, session, config, nodes_data = reactive(NULL), make_link = FALSE, show_icons = FALSE){
 
   ns <- session$ns
 
   table_data <- reactive({
 
-    data <- nodes_data
+    data <- nodes_data()
 
     if(make_link){
       data <- data %>%

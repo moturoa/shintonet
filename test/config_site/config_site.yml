@@ -51,7 +51,7 @@ network:
       highlightBackground: "#507777"
       highlightBorder: "#507777"
       fontColor: "#507777"
-      table_icon: "person-bounding-box"
+      table_icon: "briefcase"
   edgeSettings:
     arrowTo: TRUE
     edgeColor:  "#B0D5D5"
