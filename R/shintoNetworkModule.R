@@ -11,7 +11,8 @@ shintoNetworkUI <- function(id){
     softui::fluid_row(
       shiny::column(12,
                     visNetwork::visNetworkOutput(ns("shinto_network")),
-                    uiOutput(ns("expand_button_ui"))
+                    uiOutput(ns("expand_button_ui")),
+                    uiOutput(ns("download_button_ui"))
       )
     )
   )
@@ -26,13 +27,12 @@ shintoNetworkUI <- function(id){
 #' @param show_labels A boolean specifying whether labels on the edges must be shown
 #' @param hover_function A function specifying how the title of the nodes must be altered so it is shown in the in the hoover
 #' @param hover_groups Vector specifying which groups to apply the hover upon. If the hover_function is set and hover_groups is NULL, the function is applied on all nodes.
-#' @param expandable Boolean specifying whether the user can expand the network by showing other connections of a node
+#' @param expanded_data List with datasets for nodes and edges from expansion action
 #' @rdname shintoNetworkModule
 
 shintoNetworkModule <- function(input, output, session, config, nodes_data = reactive(NULL), edges_data = reactive(NULL),
                                 datasets = reactive(NULL), hierarchical = reactive(NULL), show_labels = reactive(NULL),
-                                hover_function = NULL, hover_groups = NULL, expandable = FALSE,
-                                expanded_data = reactive(NULL)){
+                                hover_function = NULL, hover_groups = NULL, expanded_data = reactive(NULL)){
 
   ns <- session$ns
 
@@ -77,8 +77,8 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
     edges
   })
 
+  res_network <- reactive({
 
-  output$shinto_network <- visNetwork::renderVisNetwork({
 
     nodes <- nodes()
     edges <- edges()
@@ -126,8 +126,10 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
                            color = list(color = config$edgeSettings$edgeColor,
                                         highlight = config$edgeSettings$edgeHighlight),
                            smooth = config$edgeSettings$smooth) %>%
-      visNetwork::visInteraction(tooltipStyle = 'position: fixed;visibility:hidden; background-color: #efefef;  font-size: 14px; text-align: center; border-radius: 6px; padding: 8px; margin: 3px;') %>%
-      visNetwork::visHierarchicalLayout(enabled=hierarchical)
+      visNetwork::visInteraction(tooltipStyle = 'position: fixed;visibility:hidden; background-color: #efefef;  font-size: 14px; text-align: center; border-radius: 6px; padding: 8px; margin: 3px;',
+                                 navigationButtons = config$networkSettings$navigation) %>%
+      visNetwork::visHierarchicalLayout(enabled=hierarchical) %>%
+      visNetwork::visOptions(manipulation = config$networkSettings$manipulation)
 
     node_kinds <- names(config$nodes)
 
@@ -144,7 +146,7 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
                               font = list(color = config$nodes[[nk]]$fontColor))
     })
 
-    if(expandable){
+    if(config$networkSettings$expandable){
 
       clickid <- ns("current_node_id")
       res_network <- res_network %>%
@@ -155,7 +157,36 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
 
     res_network
 
+
   })
+
+
+  output$shinto_network <- visNetwork::renderVisNetwork({
+
+    res_network()
+
+  })
+
+  output$download_button_ui <- renderUI({
+    if(config$networkSettings$savable){
+      softui::fluid_row(
+        shiny::column(12,
+                     downloadButton(ns("btn_export"), "Exporteer", icon = icon("escape"),
+                                    class = "btn-lg btn-light")
+        )
+      )
+    }
+  })
+
+  output$btn_export <- downloadHandler(
+    filename = function() {
+      paste('network-', Sys.Date(), '.html', sep='')
+    },
+    content = function(network) {
+      res_network() %>%
+        visNetwork::visSave(network)
+    }
+  )
 
   clicked_node <- reactiveVal(NULL)
 
@@ -168,6 +199,7 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
       )
     )
   })
+
 
   observeEvent(input$btn_expand_node, {
     req(input$current_node_id)

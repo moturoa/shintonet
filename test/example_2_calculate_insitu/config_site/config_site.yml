@@ -1,6 +1,11 @@
 # ------------- Test -------------
 
 network:
+  networkSettings:
+    expandable: TRUE
+    navigation: TRUE
+    manipulation: TRUE
+    savable: TRUE
   nodeSettings:
     mass: 5
   nodes:

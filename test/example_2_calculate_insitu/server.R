@@ -42,7 +42,7 @@ server <- function(input, output, session) {
                                                   "business_data" = business_at_address(),
                                                   "ownership" = ownership_at_address())}),
                         hierarchical = ordered, show_labels = labels, hover_function = "make_link_from_text",
-                        hover_groups = c("address", "person"), expandable = TRUE, expanded_data = expansion)
+                        hover_groups = c("address", "person"), expanded_data = expansion)
 
   expansion <- reactiveVal(list("expanded_nodes" = data.frame(), "expanded_edges" = data.frame()))
 

@@ -70,7 +70,7 @@ server <- function(input, output, session) {
   network <- callModule(shinetwork::shintoNetworkModule, "shintoNetwork",
                              config = .cc$get("network"), nodes_data = nodes, edges_data = edges,
                              hierarchical = ordered, show_labels = labels, hover_function = "make_link_from_text",
-                             hover_groups = c("address", "person"), expandable = TRUE, expanded_data = expansion)
+                             hover_groups = c("address", "person"), expanded_data = expansion)
 
 
 
