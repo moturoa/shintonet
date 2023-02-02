@@ -67,25 +67,22 @@ server <- function(input, output, session) {
     }
   })
 
-  # OPTION 1
-  # clicked_node <- callModule(shinetwork::shintoNetworkModule, "shintoNetwork",
-  #                            config = .cc$get("network"), nodes_data = nodes, edges_data = edges,
-  #                            hierarchical = ordered, show_labels = labels, hover_function = "make_link_from_text",
-  #                            hover_groups = c("address", "person"), expandable = TRUE)
-
-  # OPTION 2
-  clicked_node <- callModule(shinetwork::shintoNetworkModule, "shintoNetwork", config = .cc$get("network"),
-                             datasets = reactive({list("address_data" = chosen_address(),
-                                                       "person_data" = residents(),
-                                                       "business_data" = business_at_address(),
-                                                       "ownership" = ownership_at_address())}),
+  network <- callModule(shinetwork::shintoNetworkModule, "shintoNetwork",
+                             config = .cc$get("network"), nodes_data = nodes, edges_data = edges,
                              hierarchical = ordered, show_labels = labels, hover_function = "make_link_from_text",
                              hover_groups = c("address", "person"), expandable = TRUE, expanded_data = expansion)
 
+
+
   expansion <- reactiveVal(list("expanded_nodes" = data.frame(), "expanded_edges" = data.frame()))
 
-  observeEvent(clicked_node(), {
-    clicked <- clicked_node()
+  clicked_node <- reactive({
+    network()$clicked_node
+  })
+
+  observeEvent(network()$clicked_node, {
+
+    clicked <- network()$clicked_node
 
     expanded_nodes <- expansion()$expanded_nodes
     expanded_edges <- expansion()$expanded_edges
@@ -93,15 +90,32 @@ server <- function(input, output, session) {
     if(clicked$group == "person"){
       business_owned_by_person <- businesses %>%
         dplyr::filter(owner_id == !!clicked$node_id)
-      expanded_nodes <- rbind(expanded_nodes,
-                              shinetwork::create_network_nodes(.cc$get("network"),
-                                                               list("business_data" = business_owned_by_person)))
-      expanded_edges <- rbind(expanded_edges,
-                              shinetwork::create_network_edges(.cc$get("network"),
-                                                               list("ownership" = business_owned_by_person)))
+
+
+      add_nodes <- shinetwork::create_network_nodes(.cc$get("network"),
+                                                    list("business_data" = business_owned_by_person))
+
+
+
+      new_nodes <- rbind(expanded_nodes, add_nodes)
+      new_nodes <- new_nodes %>%
+        unique()
+
+      add_edges <- shinetwork::create_network_edges(.cc$get("network"),
+                                                    list("ownership" = business_owned_by_person))
+
+      new_edges <- rbind(expanded_edges, add_edges)
+      new_edges <- new_edges %>%
+        unique()
+
+
     }
 
-    expansion(list("expanded_nodes" = expanded_nodes, "expanded_edges" = expanded_edges))
+    if(nrow(new_nodes) != nrow(expanded_nodes) && nrow(new_edges) != nrow(expanded_edges)){
+      expansion(list("expanded_nodes" = new_nodes, "expanded_edges" = new_edges))
+    }
+
+
   })
 
   output$amount_of_nodes_ui <- renderUI({

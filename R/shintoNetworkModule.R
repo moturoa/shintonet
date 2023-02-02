@@ -37,6 +37,7 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
   ns <- session$ns
 
   nodes <- reactive({
+
     if(is.null(nodes_data())){
       if(is.null(datasets())){
         shinytoastr::toastr_error("No nodes have been supplied, but also no datasets have been supplied.
@@ -178,9 +179,22 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
     clicked_node(list("node_id" = input$current_node_id, "group" = group))
   })
 
+  return_list <- reactive({
+    if(is.null(nodes_data()) && is.null(edges_data())){
+      list(
+        "clicked_node" = clicked_node(),
+        "network_nodes" = nodes(),
+        "network_edges" = edges()
+      )
 
-  return(reactive(clicked_node()))
+    } else {
+      list(
+        "clicked_node" = clicked_node()
+      )
+    }
+  })
 
+  return(reactive(return_list()))
 
 
 }
