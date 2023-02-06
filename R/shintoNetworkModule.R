@@ -48,11 +48,13 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
     } else {
       nodes <- nodes_data()
     }
-
-    if(nrow(expanded_data()$expanded_nodes) > 0){
-      nodes <- rbind(nodes, expanded_data()$expanded_nodes) %>%
-        unique()
+    if(!is.null(expanded_data())){
+      if(nrow(expanded_data()$expanded_nodes) > 0){
+        nodes <- rbind(nodes, expanded_data()$expanded_nodes) %>%
+          unique()
+      }
     }
+
 
     nodes
   })
@@ -69,16 +71,17 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
       edges <- edges_data()
     }
 
-    if(nrow(expanded_data()$expanded_edges) > 0){
-      edges <- rbind(edges, expanded_data()$expanded_edges) %>%
-        unique()
+    if(!is.null(expanded_data())){
+      if(nrow(expanded_data()$expanded_edges) > 0){
+        edges <- rbind(edges, expanded_data()$expanded_edges) %>%
+          unique()
+      }
     }
 
     edges
   })
 
   res_network <- reactive({
-
 
     nodes <- nodes()
     edges <- edges()
