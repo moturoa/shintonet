@@ -2,7 +2,7 @@
 #' @export
 #' @param nodes A dataframe of the nodes in the network
 #' @param groupname Optional groupname to be filtered on
-#' @rdname shinetworkStatistics
+#' @rdname shintonetStatistics
 count_nodes <- function(nodes, groupname = NULL){
 
   if(is.null(groupname)){
@@ -24,11 +24,10 @@ count_nodes <- function(nodes, groupname = NULL){
 
 }
 
-#' Utility functions for the package
 #' @export
 #' @param edges A dataframe of the edges in the network
 #' @param labelname Optional labelname to be filtered on
-#' @rdname shinetworkStatistics
+#' @rdname shintonetStatistics
 count_edges <- function(edges, labelname = NULL){
 
   if(is.null(labelname)){
@@ -48,3 +47,15 @@ count_edges <- function(edges, labelname = NULL){
   }
 
 }
+
+
+# Nog niet @ param export
+#' @param edges A dataframe of the edges in the network
+#' @param start_node The node which we want to get connections to
+#' @param directed Boolean specifying if direction should be taken into account
+#' @rdname shintonetStatistics
+# get_connected_nodes(edges, start_node, directed = TRUE){
+#
+#   browser()
+#
+# }

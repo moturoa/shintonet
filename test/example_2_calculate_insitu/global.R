@@ -1,9 +1,9 @@
 source("preload/load_packages.R")
 source("R/configurationR6.R")
 
-personen <- shinetwork::person
-adressen <- shinetwork::address
-businesses <- shinetwork::business
+personen <- shintonet::person
+adressen <- shintonet::address
+businesses <- shintonet::business
 
 .cc <- configurationObject$new(filename = "config_site/config_site.yml")
 

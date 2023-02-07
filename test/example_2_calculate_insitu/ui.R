@@ -16,7 +16,7 @@ ui <- softui::simple_page(
                                                    "Geordend",
                                                    value = TRUE, status = "primary",
                                                    inline = TRUE, right = TRUE),
-                      shinetwork::shintoNetworkUI("shintoNetwork")
+                      shintonet::shintoNetworkUI("shintoNetwork")
                     )
       ),
       shiny::column(4,

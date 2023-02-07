@@ -20,8 +20,8 @@ shintoNetworkUI <- function(id){
 
 #' @export
 #' @param config A structured list form a config file which specifies the script/layout of how the network must be built
-#' @param nodes_data Optional dataset of precalculated nodes. Must be in the same format as if they would be created by shinetwork::create_network_nodes
-#' @param edges_data Optional dataset of precalculated edges. Must be in the same format as if they would be created by shinetwork::create_network_edges
+#' @param nodes_data Optional dataset of precalculated nodes. Must be in the same format as if they would be created by shintonet::create_network_nodes
+#' @param edges_data Optional dataset of precalculated edges. Must be in the same format as if they would be created by shintonet::create_network_edges
 #' @param datasets A list of datasets which contain the data for the network, and can be submitted if nodes and edges have not been calculated yet.
 #' @param hierarchical A boolean specifying 'visHierarchicalLayout'
 #' @param show_labels A boolean specifying whether labels on the edges must be shown
@@ -43,7 +43,7 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
         shinytoastr::toastr_error("No nodes have been supplied, but also no datasets have been supplied.
                                   Either nodes or a list of datasets must be supplied")
       } else {
-        nodes <- shinetwork::create_network_nodes(config, datasets())
+        nodes <- shintonet::create_network_nodes(config, datasets())
       }
     } else {
       nodes <- nodes_data()
@@ -65,7 +65,7 @@ shintoNetworkModule <- function(input, output, session, config, nodes_data = rea
         shinytoastr::toastr_error("No edges have been supplied, but also no datasets have been supplied.
                                   Either edges or a list of datasets must be supplied")
       } else {
-        edges <- shinetwork::create_network_edges(config, datasets())
+        edges <- shintonet::create_network_edges(config, datasets())
       }
     } else {
       edges <- edges_data()

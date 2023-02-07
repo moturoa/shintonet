@@ -36,7 +36,7 @@ server <- function(input, output, session) {
       dplyr::filter(address_id == chosen_address()$address_id)
   })
 
-  network <- callModule(shinetwork::shintoNetworkModule, "shintoNetwork", config = .cc$get("network"),
+  network <- callModule(shintonet::shintoNetworkModule, "shintoNetwork", config = .cc$get("network"),
                         datasets = reactive({list("address_data" = chosen_address(),
                                                   "person_data" = residents(),
                                                   "business_data" = business_at_address(),
@@ -58,7 +58,7 @@ server <- function(input, output, session) {
         dplyr::filter(owner_id == !!clicked$node_id)
 
 
-      add_nodes <- shinetwork::create_network_nodes(.cc$get("network"),
+      add_nodes <- shintonet::create_network_nodes(.cc$get("network"),
                                                     list("business_data" = business_owned_by_person))
 
 
@@ -67,7 +67,7 @@ server <- function(input, output, session) {
       new_nodes <- new_nodes %>%
         unique()
 
-      add_edges <- shinetwork::create_network_edges(.cc$get("network"),
+      add_edges <- shintonet::create_network_edges(.cc$get("network"),
                                                     list("ownership" = business_owned_by_person))
 
       new_edges <- rbind(expanded_edges, add_edges)
@@ -85,7 +85,7 @@ server <- function(input, output, session) {
   })
 
   output$amount_of_nodes_ui <- renderUI({
-    n_nodes <- shinetwork::count_nodes(network()$network_nodes)
+    n_nodes <- shintonet::count_nodes(network()$network_nodes)
     softui::fluid_row(
       shiny::column(12,
                     softui::value_box(value = n_nodes, title = "Aantal nodes", icon = bsicon("diagram-3-fill"), width = 12)
@@ -94,7 +94,7 @@ server <- function(input, output, session) {
   })
 
   output$amount_of_edges_ui <- renderUI({
-    n_edges <- shinetwork::count_edges(network()$network_edges)
+    n_edges <- shintonet::count_edges(network()$network_edges)
     softui::fluid_row(
       shiny::column(12,
                     softui::value_box(value = n_edges, title = "Aantal edges", icon = bsicon("link"), width = 12)
@@ -111,7 +111,7 @@ server <- function(input, output, session) {
   })
 
   output$amount_of_kindnodes_ui <- renderUI({
-    n_nodes <- shinetwork::count_nodes(network()$network_nodes, input$sel_nodekind)
+    n_nodes <- shintonet::count_nodes(network()$network_nodes, input$sel_nodekind)
     softui::fluid_row(
       shiny::column(12,
                     softui::value_box(value = n_nodes, title = "Aantal nodes", icon = bsicon("diagram-3-fill"), width = 12)
@@ -128,7 +128,7 @@ server <- function(input, output, session) {
   })
 
   output$amount_of_kindedges_ui <- renderUI({
-    n_edges <- shinetwork::count_edges(network()$network_edges, input$sel_edgekind)
+    n_edges <- shintonet::count_edges(network()$network_edges, input$sel_edgekind)
     softui::fluid_row(
       shiny::column(12,
                     softui::value_box(value = n_edges, title = "Aantal edges", icon = bsicon("link"), width = 12)

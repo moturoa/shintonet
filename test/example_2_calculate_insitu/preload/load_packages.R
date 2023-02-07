@@ -23,7 +23,7 @@ suppressPackageStartupMessages({
   library(shintobag)
   library(shintopostcode)
   library(shintocatman)
-  library(shinetwork)
+  library(shintonet)
 
   # Logging / dev / code
   library(futile.logger)

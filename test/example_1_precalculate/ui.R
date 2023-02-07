@@ -2,7 +2,7 @@ ui <- softui::simple_page(
   softui::fluid_page(
     softui::fluid_row(
       shiny::column(12,
-           shiny::selectInput("sel_address", label = "Select an address", choices = adressen$address_name)
+                    shiny::selectInput("sel_address", label = "Select an address", choices = adressen$address_name)
       )
     ),
     softui::fluid_row(
@@ -16,12 +16,12 @@ ui <- softui::simple_page(
                                                    "Geordend",
                                                    value = TRUE, status = "primary",
                                                    inline = TRUE, right = TRUE),
-                      shinetwork::shintoNetworkUI("shintoNetwork")
+                      shintonet::shintoNetworkUI("shintoNetwork")
                     )
       ),
       shiny::column(4,
                     softui::box(
-                      networkTableUI("network_table")
+                      shintonet::networkTableUI("network_table")
                     )
       )
     ),
@@ -30,17 +30,22 @@ ui <- softui::simple_page(
                     uiOutput("amount_of_nodes_ui")
       ),
       shiny::column(6,
-                    uiOutput("amount_of_edges_ui")
+                    shiny::uiOutput("amount_of_edges_ui")
       )
     ),
     softui::fluid_row(
       shiny::column(6,
-                    uiOutput("nodekind_selector"),
-                    uiOutput("amount_of_kindnodes_ui")
+                    shiny::uiOutput("nodekind_selector"),
+                    shiny::uiOutput("amount_of_kindnodes_ui")
       ),
       shiny::column(6,
-                    uiOutput("edgekind_selector"),
-                    uiOutput("amount_of_kindedges_ui")
+                    shiny::uiOutput("edgekind_selector"),
+                    shiny::uiOutput("amount_of_kindedges_ui")
+      )
+    ),
+    softui::fluid_row(
+      shiny::column(12,
+                    # shiny::uiOutput("function_test_ui")
       )
     )
   )
